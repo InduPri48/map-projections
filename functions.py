@@ -25,7 +25,7 @@ def great_circle_arc_angle(lat1, long1, lat2, long2):
     lat1 = (lat1 * math.pi) / 180 # convert to radians
     lat2 = (lat2 * math.pi) / 180 # convert to radians
 
-    cos_dsigma = math.sin(lat1) * math.sin(lat2) + math.cos(lat1) * math.cos(lat2_rad) * math.cos(delta_long)
+    cos_dsigma = math.sin(lat1) * math.sin(lat2) + math.cos(lat1) * math.cos(lat2) * math.cos(delta_long)
     dsigma = math.acos(cos_dsigma)
     
     dsigma = (dsigma * 180) / math.pi # convert to degrees
@@ -43,6 +43,62 @@ def azimuth(lat1, long1, lat2, long2):
     bottom = math.cos(lat1) * math.tan(lat2) - math.sin(lat1) * math.cos(delta_long)
     azimuth = math.atan2(top, bottom)
     
-    azimuth = (azimuth_rad * 180) / math.pi # convert to degrees
+    azimuth = (azimuth * 180) / math.pi # convert to degrees
     
     return azimuth
+
+# Calculate the adjacent arc angle of a spherical right triangle given the hypotenuse arc angle and the vertex angle (all angles in degrees)
+def adjacent_arc_angle(hypotenuse_arc_angle, vertex_angle):
+
+    vertex_angle = (vertex_angle * math.pi) / 180 # convert to radians
+    hypotenuse_arc_angle = (hypotenuse_arc_angle * math.pi) / 180 # convert to radians
+
+    partial = math.cos(vertex_angle) * math.tan(hypotenuse_arc_angle)
+    adjacent_arc_angle = math.atan(partial)
+    
+    adjacent_arc_angle = (adjacent_arc_angle * 180) / math.pi # convert to degrees
+
+    return adjacent_arc_angle
+
+# Calculate the opposite arc angle of a spherical right triangle given the hypotenuse arc angle and the vertex angle (all angles in degrees)
+def opposite_arc_angle(hypotenuse_arc_angle, vertex_angle):
+
+    vertex_angle = (vertex_angle * math.pi) / 180 # convert to radians
+    hypotenuse_arc_angle = (hypotenuse_arc_angle * math.pi) / 180 # convert to radians
+
+    partial = math.sin(vertex_angle) * math.sin(hypotenuse_arc_angle)
+    opposite_arc_angle_rad = math.asin(partial)
+    
+    opposite_arc_angle = (opposite_arc_angle * 180) / math.pi # convert to degrees
+
+    return opposite_arc_angle
+
+def generate_lines(lat_spacing, long_spacing, n_divs):
+
+    lines = []
+
+    # Generate the lines of longitude
+    for i in range(360 // long_spacing):
+
+        for j in range(n_divs):
+    
+            # per line
+            p1 = [i * long_spacing, -90 + j * (180 / n_divs)]
+            p2 = [i * long_spacing, -90 + (j + 1) * (180 / n_divs)]
+            line = [p1, p2]
+            
+            lines = lines + [line]
+
+    # Generate the lines of latitude
+    for i in range(180 // lat_spacing):
+
+        for j in range(n_divs):
+    
+            # per line
+            p1 = [-180 + j * (360 / n_divs), -90 + i * lat_spacing]
+            p2 = [-180 + (j + 1) * (360 / n_divs), -90 + i * lat_spacing]
+            line = [p1, p2]
+        
+            lines = lines + [line]
+
+    return lines
